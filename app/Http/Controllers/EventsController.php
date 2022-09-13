@@ -9,6 +9,8 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Date;
 
+use Illuminate\Database\Eloquent\Builder;
+
 class EventsController extends BaseController
 {
     public function getWarmupEvents() {
@@ -182,6 +184,11 @@ class EventsController extends BaseController
      */
 
     public function getFutureEventsWithWorkshops() {
-        throw new \Exception('implement in coding task 2');
+        //$events = Event::with('workshops')->get();
+        $events = Event::whereHas('workshops', function (Builder $query) {
+            $query->where('start', '>', date('Y-m-d H:i:s'));
+        })->with('workshops')->get();
+
+        return response()->json($events);
     }
 }
